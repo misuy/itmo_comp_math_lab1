@@ -11,9 +11,14 @@ public class GaussSeidelSolver {
 
     private VectorOperator[] operators = null;
 
-    public GaussSeidelSolver(SLE sle) {
+    private double eps;
+
+    public GaussSeidelSolver(SLE sle, double eps) {
         this.sle = sle;
+        this.eps = eps;
     }
+
+    public SLE getSle() { return this.sle; }
 
     public boolean transformToDiagonallyDominatingMatrix() {
         Map<LE, Boolean> freeMap = new HashMap<>();
@@ -61,7 +66,13 @@ public class GaussSeidelSolver {
             if (!iterate) {
                 for (int i=0; i<potentialSwapScheme.length; i++) {
                     if (swapScheme[i] == null) {
-                        if (potentialSwapScheme[i].size() > 1) {
+                        for (int j = 0; j < potentialSwapScheme[i].size(); j++) {
+                            if (!freeMap.get(potentialSwapScheme[i].get(j))) {
+                                potentialSwapScheme[i].remove(j);
+                                j--;
+                            }
+                        }
+                        if (potentialSwapScheme[i].size() >= 1) {
                             swapScheme[i] = potentialSwapScheme[i].get(0);
                             freeMap.replace(potentialSwapScheme[i].get(0), false);
                             iterate = true;
@@ -119,8 +130,9 @@ public class GaussSeidelSolver {
         }
     }
 
-    public void solve(double eps) {
+    public void solve() {
         this.init();
+        System.out.println("Решение начато.");
         int maxIterationsCount = 100000;
         System.out.println(this.x + "\n");
         for (int i=0; i<maxIterationsCount; i++) {
@@ -137,8 +149,8 @@ public class GaussSeidelSolver {
 
             System.out.println("-----------------------------------\n");
 
-            if (maxDelta < eps) {
-                System.out.println("max(" + deltaVector.getName() + ") < eps(=" + eps + "). Решение окончено.");
+            if (maxDelta < this.eps) {
+                System.out.println("max(" + deltaVector.getName() + ")(=" + maxDelta + ") < eps(=" + this.eps + "). Решение окончено.");
                 this.x.setName("X");
                 System.out.println("Ответ: " + this.x);
                 break;

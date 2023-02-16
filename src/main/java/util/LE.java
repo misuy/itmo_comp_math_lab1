@@ -24,8 +24,11 @@ public class LE {
         StringBuilder builder = new StringBuilder();
         for (int i=0 ; i<this.size; i++) {
             builder.append(this.a[i]);
-            builder.append(" ");
+            builder.append("*x");
+            builder.append(i);
+            builder.append(" + ");
         }
+        builder.delete(builder.length()-2, builder.length());
         builder.append("= ");
         builder.append(this.b);
         return builder.toString();
